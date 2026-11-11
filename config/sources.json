@@ -1,5 +1,8 @@
 {
- "domains": ["reuters.com", "bloomberg.com", "bloomberg.co.jp", "nikkei.com", "apnews.com", "ft.com", "wsj.com",
+ "domains": ["nikkei.com", "bloomberg.com", "bloomberg.co.jp",
+             "jiji.com", "afpbb.com", "cnbc.com", "npr.org", "pbs.org",
+             "abcnews.go.com", "cbsnews.com", "nbcnews.com",
+             "reuters.com", "apnews.com", "ft.com", "wsj.com",
              "federalreserve.gov", "boj.or.jp", "ecb.europa.eu", "bankofengland.co.uk"],
  "suffixes": [".gov", ".go.jp", ".gov.uk", ".europa.eu"]
 }

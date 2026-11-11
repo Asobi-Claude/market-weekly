@@ -36,6 +36,20 @@ class HelpersTest(unittest.TestCase):
         self.assertFalse(ok(""))
         self.assertFalse(ok(None))
 
+    def test_shipped_allowlist_covers_sources_claude_can_actually_open(self):
+        from scripts.issue import load_allowed
+        allowed = load_allowed()
+        for url in ("https://www.nikkei.com/article/x", "https://asia.nikkei.com/x",
+                    "https://www.bloomberg.com/jp/news/articles/x", "https://www.cnbc.com/2026/11/05/x.html",
+                    "https://www.jiji.com/jc/article?k=x", "https://www.afpbb.com/articles/-/1",
+                    "https://www.npr.org/x", "https://www.pbs.org/newshour/x", "https://abcnews.go.com/x",
+                    "https://www.cbsnews.com/news/x", "https://www.nbcnews.com/business/x",
+                    "https://www.federalreserve.gov/x", "https://www.boj.or.jp/x"):
+            self.assertTrue(host_allowed(url, allowed), url)
+        for url in ("https://x.com/someone/status/1", "https://note.com/x", "https://medium.com/x",
+                    "https://someone.substack.com/p/x", "https://finance.yahoo.com/x"):
+            self.assertFalse(host_allowed(url, allowed), url)
+
     def test_featured_ids_in_order_of_appearance(self):
         self.assertEqual(featured_ids(sample_issue()), ["gold", "sp500", "usdjpy", "nikkei", "wti", "dax"])
 
