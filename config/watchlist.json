@@ -1,0 +1,20 @@
+[
+ {"id":"sp500","name":"米国株 S&P500","symbol":"^GSPC","kind":"price","group":"株"},
+ {"id":"nasdaq","name":"米国株 ナスダック","symbol":"^IXIC","kind":"price","group":"株"},
+ {"id":"stoxx600","name":"欧州株 STOXX600","symbol":"^STOXX","kind":"price","group":"株"},
+ {"id":"dax","name":"ドイツ株 DAX","symbol":"^GDAXI","kind":"price","group":"株"},
+ {"id":"ftse","name":"英国株 FTSE100","symbol":"^FTSE","kind":"price","group":"株"},
+ {"id":"nikkei","name":"日経平均","symbol":"^N225","kind":"price","group":"株"},
+ {"id":"hangseng","name":"香港株 ハンセン","symbol":"^HSI","kind":"price","group":"株"},
+ {"id":"shanghai","name":"中国株 上海総合","symbol":"000001.SS","kind":"price","group":"株"},
+ {"id":"nifty","name":"インド株 Nifty50","symbol":"^NSEI","kind":"price","group":"株"},
+ {"id":"em","name":"新興国株（ETF）","symbol":"EEM","kind":"price","group":"株"},
+ {"id":"gold","name":"金","symbol":"GC=F","kind":"price","group":"商品"},
+ {"id":"wti","name":"原油 WTI","symbol":"CL=F","kind":"price","group":"商品"},
+ {"id":"copper","name":"銅","symbol":"HG=F","kind":"price","group":"商品"},
+ {"id":"usdjpy","name":"ドル/円","symbol":"JPY=X","kind":"price","group":"為替"},
+ {"id":"eurusd","name":"ユーロ/ドル","symbol":"EURUSD=X","kind":"price","group":"為替"},
+ {"id":"dxy","name":"ドル指数","symbol":"DX-Y.NYB","kind":"price","group":"為替"},
+ {"id":"us10y","name":"米国10年国債利回り","symbol":"^TNX","kind":"yield","group":"金利"},
+ {"id":"btc","name":"ビットコイン","symbol":"BTC-USD","kind":"price","group":"その他"}
+]
