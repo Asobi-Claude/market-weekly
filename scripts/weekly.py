@@ -7,6 +7,7 @@ import json
 import os
 import statistics
 import sys
+import time
 from datetime import date, timedelta
 
 if __package__ in (None, ""):
@@ -17,6 +18,7 @@ from scripts import prices, state  # noqa: E402
 MIN_VALID = 10
 LOOKBACK_WEEKS = 26
 MIN_HISTORY_WEEKS = 8
+RETRY_WAIT = 300  # seconds to wait before re-fetching when a Friday close is missing
 WEEK = timedelta(days=7)
 
 
@@ -88,6 +90,20 @@ def build_snapshot(watchlist, fetch, week_end):
             "instruments": instruments, "missing": missing}
 
 
+def partial_ids(snapshot):
+    """Instruments whose week ends before Friday: a holiday, or Yahoo has not posted Friday yet."""
+    return [i["id"] for i in snapshot["instruments"] if i["end_date"] != snapshot["week_end"]]
+
+
+def snapshot_with_retry(watchlist, fetch, week_end, wait=RETRY_WAIT, sleep=time.sleep):
+    """Build the snapshot; if some Friday closes are missing, wait once and build it again."""
+    snap = build_snapshot(watchlist, fetch, week_end)
+    if partial_ids(snap):
+        sleep(wait)
+        snap = build_snapshot(watchlist, fetch, week_end)
+    return snap
+
+
 def main(argv=None):
     sys.stdout.reconfigure(encoding="utf-8")
     p = argparse.ArgumentParser(description=__doc__)
@@ -98,7 +114,7 @@ def main(argv=None):
     a = p.parse_args(argv)
 
     week_end = a.week_end or state.closed_week_end()
-    snap = build_snapshot(prices.load_watchlist(), prices.fetch_series, week_end)
+    snap = snapshot_with_retry(prices.load_watchlist(), prices.fetch_series, week_end)
     os.makedirs(os.path.dirname(os.path.abspath(a.out)), exist_ok=True)
     with open(a.out, "w", encoding="utf-8", newline="\n") as f:
         json.dump(snap, f, ensure_ascii=False, indent=1)
@@ -111,6 +127,9 @@ def main(argv=None):
               f"{i['start_date']} {i['start']:.2f} -> {i['end_date']} {i['end']:.2f}")
     for m in snap["missing"]:
         print(f" - {m['id']}: {m['reason']}")
+    for id_ in partial_ids(snap):
+        end = next(i["end_date"] for i in snap["instruments"] if i["id"] == id_)
+        print(f" ! {id_}: 金曜の値がなく {end} までの値動きです（休場か、データの遅れ）")
     return 0
 
 

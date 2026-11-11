@@ -70,6 +70,13 @@ def _md(iso):
     return f"{d.month}/{d.day}"
 
 
+WEEKDAYS = "月火水木金土日"
+
+
+def _md_wd(iso):
+    return f"{_md(iso)}（{WEEKDAYS[date.fromisoformat(iso).weekday()]}）"
+
+
 def week_label(snapshot):
     return f"{_md(snapshot['week_start'])}〜{_md(snapshot['week_end'])}の週"
 
@@ -159,6 +166,10 @@ def render_issue(snapshot, issue):
            f'<h1>{esc(issue["headline"])}</h1>',
            '<div class="lbl">今週の動き</div>', charts.bars_svg(featured),
            '<div class="cap">棒の長さ＝普段の週と比べた動きの大きさ。数字は1週間の変化。</div>']
+    for item in featured:
+        if item["end_date"] != snapshot["week_end"]:
+            out.append(f'<div class="cap">※{esc(item["name"])}は{_md_wd(item["end_date"])}までの値動きです'
+                       '（金曜は休場か、値がまだ届いていませんでした）。</div>')
     out.extend(_theme_html(t, inst, sources) for t in themes)
     if others:
         out.append(f'<h2>{"テーマ以外の大きな動き" if themes else "今週の大きな動き"}</h2>')

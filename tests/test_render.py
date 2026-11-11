@@ -77,6 +77,16 @@ class IssuePageTest(unittest.TestCase):
         page = render_issue(self.snap, self.issue)
         self.assertNotIn('" onclick="alert(1)', page)
 
+    def test_instrument_ending_before_friday_is_called_out(self):
+        nikkei = next(i for i in self.snap["instruments"] if i["id"] == "nikkei")
+        nikkei["end_date"] = "2026-11-12"
+        nikkei["daily"] = nikkei["daily"][:-1]
+        page = render_issue(self.snap, self.issue)
+        self.assertIn("日経平均は11/12（木）までの値動きです", page)
+
+    def test_no_partial_note_when_all_end_on_friday(self):
+        self.assertNotIn("までの値動きです", self.page)
+
     def test_unclear_item_shows_no_reason_text(self):
         self.assertIn("はっきりした理由は報じられていません。", self.page)
 

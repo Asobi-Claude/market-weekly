@@ -40,6 +40,8 @@ python3 scripts/weekly.py snapshot
 3. `python3 scripts/state.py record --week-end <week_end> --status skipped`
 4. `issues.json` を `skip: <week_end>` でコミットし、`master` に push
 
+金曜の値が欠けている商品があると、スクリプトが 5 分待って自動で取り直します（そのぶん時間がかかります）。それでも欠けている商品は `! <id>: 金曜の値がなく … までの値動きです` と表示されます。その商品を取り上げる場合は、本文でも「木曜まで（など）の値動き」であることに触れます。ページにも自動で注記が入ります。
+
 `status: ok` なら `work/snapshot.json` を読みます。`instruments` は「普段の週と比べてどれだけ大きく動いたか」（`score`）の順に並んでいます。
 
 ## 3. 取り上げる商品を選ぶ
@@ -52,7 +54,12 @@ python3 scripts/weekly.py snapshot
 
 商品ごとに Web 検索して、**その週のその値動き**について報道を確認します。
 
-- 使ってよいのは `config/sources.json` にあるドメインの記事・公式発表だけです。検索は、実際に検索できる次のサイトに絞ると効率的です: 日経（nikkei.com）、ブルームバーグ（bloomberg.com）、時事（jiji.com）、AFP（afpbb.com）、CNBC（cnbc.com）、NPR、PBS、ABC、CBS、NBC、各国の中央銀行・政府。ロイター・AP・FT・WSJ は許可されていますが、検索では出てこないことがあります。
+- 使ってよいのは `config/sources.json` にあるドメインの記事・公式発表だけです。
+- **WebSearch では必ず `allowed_domains` を指定します。** 指定しないと、許可されていないサイトばかりが上位に出ます。次の組み合わせが実際に使えます（ロイター・AP・FT・WSJ を入れると検索そのものがエラーになるので入れません）。
+  - 日本語の記事: `["nikkei.com", "jiji.com", "afpbb.com", "bloomberg.com"]`
+  - 英語の記事: `["cnbc.com", "bloomberg.com", "npr.org", "pbs.org", "abcnews.go.com", "cbsnews.com", "nbcnews.com"]`
+  - 公式発表: `["federalreserve.gov", "boj.or.jp", "ecb.europa.eu", "bankofengland.co.uk"]`
+- 時事の記事は、`jiji.com` の検索結果のほか `sp.m.jiji.com/article/show/…` の形でも開けます。
 - **できるかぎり記事を実際に開いて**、対象の週の、その商品の値動きについて書かれていることを確かめます。
 - **ブルームバーグは記事本文を開けません。** ブルームバーグに限り、検索結果の見出しと要約で確認できた内容を使ってかまいません。ただし、見出しと要約から読み取れる範囲を超えたことは書きません。
 - ブルームバーグ以外で本文を開けなかった記事（有料の壁で冒頭しか読めない場合は冒頭まで）は、読めた範囲の内容だけを使います。

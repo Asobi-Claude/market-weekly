@@ -2,7 +2,8 @@ import unittest
 from datetime import date, timedelta
 
 from scripts.prices import PriceError
-from scripts.weekly import (MIN_VALID, build_snapshot, last_close_in, score,
+from scripts.weekly import (MIN_VALID, build_snapshot, last_close_in,
+                            partial_ids, score, snapshot_with_retry,
                             weekly_change)
 
 WEEK_END = date(2026, 11, 13)  # a Friday
@@ -127,6 +128,38 @@ class SnapshotTest(unittest.TestCase):
         snap = build_snapshot(watch(MIN_VALID - 1), lambda s: alternating(26), WEEK_END)
         self.assertEqual(snap["status"], "insufficient")
         self.assertEqual(build_snapshot(watch(MIN_VALID), lambda s: alternating(26), WEEK_END)["status"], "ok")
+
+    def test_partial_ids_lists_instruments_ending_before_friday(self):
+        def fetch(symbol):
+            series = alternating(26)
+            return series[:-1] + [("2026-11-12", series[-1][1])] if symbol == "S0" else series
+        snap = build_snapshot(watch(MIN_VALID), fetch, WEEK_END)
+        self.assertEqual(partial_ids(snap), ["i0"])
+
+    def test_retry_refetches_once_when_friday_is_missing(self):
+        calls, sleeps = [], []
+
+        def fetch(symbol):
+            calls.append(symbol)
+            series = alternating(26)
+            late = symbol == "S0" and calls.count("S0") == 1     # Friday bar arrives on the 2nd try
+            return series[:-1] + [("2026-11-12", series[-1][1])] if late else series
+        snap = snapshot_with_retry(watch(MIN_VALID), fetch, WEEK_END, wait=300, sleep=sleeps.append)
+        self.assertEqual(sleeps, [300])
+        self.assertEqual(partial_ids(snap), [])
+        self.assertEqual(calls.count("S0"), 2)
+
+    def test_no_retry_when_every_friday_is_present(self):
+        sleeps = []
+        snapshot_with_retry(watch(MIN_VALID), lambda s: alternating(26), WEEK_END, wait=300, sleep=sleeps.append)
+        self.assertEqual(sleeps, [])
+
+    def test_retry_keeps_partial_when_friday_never_arrives(self):
+        def fetch(symbol):
+            series = alternating(26)
+            return series[:-1] + [("2026-11-12", series[-1][1])] if symbol == "S0" else series
+        snap = snapshot_with_retry(watch(MIN_VALID), fetch, WEEK_END, wait=1, sleep=lambda s: None)
+        self.assertEqual(partial_ids(snap), ["i0"])
 
     def test_snapshot_all_fetches_fail(self):
         def fetch(symbol):
