@@ -53,6 +53,17 @@ class ParseTest(unittest.TestCase):
         rows = parse_chart(payload([T0 + 23 * 3600], [1.0], gmtoffset=32400))
         self.assertEqual(rows[0][0], iso(T0 + DAY))
 
+    def test_midnight_bar_stamped_before_dst_change_keeps_its_date(self):
+        # Futures bars are stamped at local midnight. Yahoo reports only today's UTC offset
+        # (-5h in winter), so a summer bar (midnight EDT = 04:00 UTC) lands at 23:00 the day before.
+        rows = parse_chart(payload([T0 + 4 * 3600], [1.0], gmtoffset=-18000))
+        self.assertEqual(rows[0][0], iso(T0))
+
+    def test_midnight_bar_stamped_after_dst_start_keeps_its_date(self):
+        # London FX: winter bar at 00:00 UTC read with the summer offset (+1h) stays the same day.
+        rows = parse_chart(payload([T0], [1.0], gmtoffset=3600))
+        self.assertEqual(rows[0][0], iso(T0))
+
     def test_parse_dedupes_same_date_keeping_last(self):
         rows = parse_chart(payload([T0, T0 + 3600, T0 + DAY], [1.0, 2.0, 3.0]))
         self.assertEqual(rows, [(iso(T0), 2.0), (iso(T0 + DAY), 3.0)])

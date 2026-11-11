@@ -15,6 +15,12 @@ WATCHLIST = os.path.join(ROOT, "config", "watchlist.json")
 CHART_URL = "https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?range=1y&interval=1d"
 
 
+# Yahoo gives one UTC offset (today's) for the whole year, so bars stamped at local midnight on
+# the other side of a daylight-saving change sit at 23:00 the previous day. Bars are stamped at
+# the session open (midnight or morning), so nudging by a few hours restores the right date.
+DST_SLACK = 3 * 3600
+
+
 class PriceError(Exception):
     pass
 
@@ -32,7 +38,7 @@ def parse_chart(payload):
     for ts, close in zip(stamps, closes):
         if close is None or ts is None:
             continue
-        day = datetime.fromtimestamp(ts + offset, timezone.utc).date().isoformat()
+        day = datetime.fromtimestamp(ts + offset + DST_SLACK, timezone.utc).date().isoformat()
         by_date[day] = float(close)
     return sorted(by_date.items())
 
