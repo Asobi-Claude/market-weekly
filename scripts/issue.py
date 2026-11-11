@@ -6,6 +6,7 @@ Prints `ok` and exits 0, or prints one problem per line and exits 1.
 import argparse
 import json
 import os
+import re
 import sys
 import urllib.parse
 from collections import Counter
@@ -33,15 +34,39 @@ def _key(value):
     return value if isinstance(value, str) else None
 
 
+def _strings(value, where, field, errs):
+    """A list of non-empty strings, or absent. Reports anything else and returns the usable strings."""
+    if value is None:
+        return []
+    if not isinstance(value, list) or not all(isinstance(v, str) and v.strip() for v in value):
+        errs.append(f"{where}: {field} は文字列の配列にしてください")
+    return [v for v in _l(value) if isinstance(v, str) and v.strip()]
+
+
+def _dict_list(container, field, where, errs):
+    """container[field] must be a list of objects when present."""
+    value = container.get(field)
+    if value is not None and (not isinstance(value, list) or not all(isinstance(v, dict) for v in value)):
+        errs.append(f"{where}: {field} はオブジェクトの配列にしてください")
+    return _dicts(value)
+
+
+HOST_RE = re.compile(r"^[a-z0-9.-]+$")
+
+
 def host_allowed(url, allowed):
     if not isinstance(url, str):
+        return False
+    # Python and browsers disagree on where the host ends when a URL holds "\" or whitespace:
+    # "https://evil.example\@www.reuters.com" opens evil.example in a browser.
+    if any(ch == "\\" or ch.isspace() or ord(ch) < 32 for ch in url):
         return False
     try:
         parts = urllib.parse.urlsplit(url)
         host = (parts.hostname or "").lower()
     except ValueError:
         return False
-    if parts.scheme != "https" or not host:
+    if parts.scheme != "https" or "@" in parts.netloc or not HOST_RE.match(host):
         return False
     if any(host == d or host.endswith("." + d) for d in allowed.get("domains", [])):
         return True
@@ -123,7 +148,7 @@ def _check_theme(theme, where, inst, errs, used):
             if not _s(n.get("label")):
                 errs.append(f"{where} ノード {nid}: label が空です")
             if kind == "event":
-                refs = [r for r in _l(n.get("sources")) if _key(r)]
+                refs = _strings(n.get("sources"), f"{where} ノード {nid}", "sources", errs)
                 used.update(refs)
                 if not refs:
                     errs.append(f"{where} ノード {nid}: 出来事（event）には出典が1件以上必要です")
@@ -149,7 +174,11 @@ def _check_theme(theme, where, inst, errs, used):
             errs.append(f"{ew}: short は 1〜24 字にしてください")
         if len(_s(e.get("explain"))) < 40:
             errs.append(f"{ew}: explain は 40 字以上で、仕組みから説明してください")
-        used.update(r for r in _l(e.get("sources")) if _key(r))
+        refs = _strings(e.get("sources"), ew, "sources", errs)
+        used.update(refs)
+        target = next((n for n in nodes if n.get("id") == _key(e.get("to"))), {})
+        if target.get("type") == "instrument" and not refs:
+            errs.append(f"{ew}: 商品が動いた理由を述べる矢印には出典が1件以上必要です")
     for n in nodes:
         nid = _key(n.get("id"))
         if nid and n.get("type") in ("mechanism", "instrument") and nid not in incoming:
@@ -160,8 +189,9 @@ def _check_theme(theme, where, inst, errs, used):
     except ValueError:
         errs.append(f"{where}: 矢印が循環しています")
 
-    for g in _l(theme.get("glossary")):
-        if not isinstance(g, dict) or not _s(g.get("term")) or not _s(g.get("text")):
+    _dict_list(theme, "glossary", where, errs)
+    for g in _dicts(theme.get("glossary")):
+        if not _s(g.get("term")) or not _s(g.get("text")):
             errs.append(f"{where}: glossary の各項目には term と text が必要です")
 
     focus = _dicts(theme.get("focus"))
@@ -173,10 +203,11 @@ def _check_theme(theme, where, inst, errs, used):
             errs.append(f"{where}: focus の商品「{f.get('instrument')}」はこのテーマの instrument ノードにありません")
             continue
         days = {d for d, _ in inst[fid]["daily"]}
-        for note in _l(f.get("notes")):
-            if not isinstance(note, dict) or not _s(note.get("text")):
+        _dict_list(f, "notes", f"{where}: focus {fid}", errs)
+        for note in _dicts(f.get("notes")):
+            if not _s(note.get("text")):
                 errs.append(f"{where}: focus {fid} の notes には date と text が必要です")
-            elif note.get("date") not in days:
+            elif _key(note.get("date")) not in days:
                 errs.append(f"{where}: focus {fid} の注記の日付 {note.get('date')} は値動きデータにありません")
 
 
@@ -185,11 +216,11 @@ def _check_other(item, where, inst, errs, used):
         errs.append(f"{where}: 商品「{item.get('instrument')}」は snapshot にありません")
     if not _s(item.get("what")):
         errs.append(f"{where}: what が空です")
-    steps = _l(item.get("why_steps"))
-    if any(not _s(step) for step in steps):
-        errs.append(f"{where}: why_steps に空の段階があります")
-    refs = [r for r in _l(item.get("sources")) if _key(r)]
+    steps = _strings(item.get("why_steps"), where, "why_steps", errs)
+    refs = _strings(item.get("sources"), where, "sources", errs)
     used.update(refs)
+    if "unclear" in item and not isinstance(item["unclear"], bool):
+        errs.append(f"{where}: unclear は true か false にしてください")
     if item.get("unclear") is True:
         return
     if not 2 <= len(steps) <= 5:
@@ -208,8 +239,11 @@ def validate(issue, snapshot, allowed):
 
     if issue.get("week_end") != snapshot["week_end"]:
         errs.append(f"week_end が snapshot（{snapshot['week_end']}）と一致しません")
-    if not 1 <= len(_s(issue.get("headline"))) <= 40:
+    headline = issue.get("headline")
+    if not 1 <= len(_s(headline)) <= 40:
         errs.append("headline は 1〜40 字にしてください")
+    elif any(ord(ch) < 32 or ch in '"`$\\' for ch in headline):
+        errs.append('headline に改行や " ` $ \\ は使えません（LINE の通知とコマンドで使うため）')
     if not _s(issue.get("quiz")):
         errs.append("quiz が空です")
 

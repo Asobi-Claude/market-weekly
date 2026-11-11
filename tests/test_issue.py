@@ -35,6 +35,12 @@ class HelpersTest(unittest.TestCase):
         self.assertFalse(ok("not a url"))
         self.assertFalse(ok(""))
         self.assertFalse(ok(None))
+        # Python reads the host after the backslash; browsers treat "\" as "/" and open evil.example
+        self.assertFalse(ok("https://evil.example\\@www.reuters.com/x"))
+        self.assertFalse(ok("https://evil.example\\.reuters.com/x"))
+        self.assertFalse(ok("https://www.reuters.com /x"))
+        self.assertFalse(ok("https://www.reu\tters.com/x"))
+        self.assertFalse(ok("https://a@www.reuters.com/x"))
 
     def test_shipped_allowlist_covers_sources_claude_can_actually_open(self):
         from scripts.issue import load_allowed
@@ -193,6 +199,70 @@ class RulesTest(Base):
 
     def test_rule14_glossary(self):
         self.assertRejected(lambda i: i["themes"][0]["glossary"][0].update(text=""), "glossary")
+
+    def test_rule15_edge_into_instrument_needs_source(self):
+        # Saying "gold rose because of X" is a reason, so it needs reporting behind it (spec §4).
+        def mutate(i):
+            i["themes"][0]["edges"][1]["sources"] = []   # rates -> n_gold
+        self.assertRejected(mutate, "出典")
+
+    def test_rule15_edge_into_mechanism_may_be_textbook(self):
+        def mutate(i):
+            del i["themes"][0]["edges"][0]["sources"]   # jobs -> rates
+        self.assertEqual(errors(mutate), [])
+
+
+def _set(path, value):
+    """Mutation that sets issue[path...] = value."""
+    def mutate(issue):
+        target = issue
+        for key in path[:-1]:
+            target = target[key]
+        target[path[-1]] = value
+    return mutate
+
+
+WRONG_TYPES = {
+    "glossary is a string": _set(["themes", 0, "glossary"], "用語"),
+    "glossary is an object": _set(["themes", 0, "glossary"], {"term": "a", "text": "b"}),
+    "glossary item is a string": _set(["themes", 0, "glossary"], ["用語"]),
+    "notes is a string": _set(["themes", 0, "focus", 0, "notes"], "注記"),
+    "notes is an object": _set(["themes", 0, "focus", 0, "notes"], {"date": "2026-11-11", "text": "a"}),
+    "note date is a list": _set(["themes", 0, "focus", 0, "notes", 0, "date"], ["2026-11-11"]),
+    "edge sources has a list": _set(["themes", 0, "edges", 0, "sources"], ["s1", ["s2"]]),
+    "edge sources is a string": _set(["themes", 0, "edges", 0, "sources"], "s1"),
+    "event sources has an object": _set(["themes", 0, "nodes", 0, "sources"], ["s1", {"id": "s1"}]),
+    "others sources has a list": _set(["others", 0, "sources"], ["s3", ["s3"]]),
+    "unclear item why_steps is a number": _set(["others", 1, "why_steps"], 5),
+    "why_steps has a number": _set(["others", 0, "why_steps"], ["a", 3]),
+    "unclear is a string": _set(["others", 0, "unclear"], "true"),
+    "headline has a newline": _set(["headline"], "一行目\n二行目"),
+}
+
+
+class TypeSafetyTest(Base):
+    def test_wrong_types_are_rejected_without_crashing(self):
+        for name, mutate in WRONG_TYPES.items():
+            with self.subTest(name):
+                self.assertTrue(errors(mutate), name)
+
+    def test_whatever_validate_accepts_also_renders(self):
+        from scripts.render import render_issue
+        accepted = {
+            "no glossary": lambda i: i["themes"][0].pop("glossary"),
+            "no notes": lambda i: i["themes"][0]["focus"][0].pop("notes"),
+            "no sources on edge into mechanism": lambda i: i["themes"][0]["edges"][0].pop("sources"),
+            "no unclear key": lambda i: i["others"][0].pop("unclear"),
+            "extra fields": lambda i: i["sources"][0].update(note="memo"),
+        }
+        for name, mutate in {**accepted, **WRONG_TYPES}.items():
+            with self.subTest(name):
+                issue = sample_issue()
+                mutate(issue)
+                if not validate(issue, sample_snapshot(), ALLOWED):
+                    render_issue(sample_snapshot(), issue)
+                elif name in accepted:
+                    self.fail(f"{name} should be valid")
 
 
 if __name__ == "__main__":

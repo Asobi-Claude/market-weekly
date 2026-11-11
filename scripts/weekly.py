@@ -97,7 +97,7 @@ def main(argv=None):
     s.add_argument("--out", default=os.path.join(state.ROOT, "work", "snapshot.json"))
     a = p.parse_args(argv)
 
-    week_end = a.week_end or state.week_end_for(state.today_jst())
+    week_end = a.week_end or state.closed_week_end()
     snap = build_snapshot(prices.load_watchlist(), prices.fetch_series, week_end)
     os.makedirs(os.path.dirname(os.path.abspath(a.out)), exist_ok=True)
     with open(a.out, "w", encoding="utf-8", newline="\n") as f:

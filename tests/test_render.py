@@ -157,6 +157,16 @@ class BuildTest(unittest.TestCase):
         self._build()
         self.assertEqual(self._read("docs/index.html").count('href="issues/2026-11-13.html"'), 1)
 
+    def test_rebuild_from_published_data_reproduces_page_and_notice(self):
+        url = self._build()
+        page = self._read("docs/issues/2026-11-13.html")
+        os.remove(os.path.join(self.root, "work/notice.txt"))
+        again = build(os.path.join(self.root, "data/2026-11-13/snapshot.json"),
+                      os.path.join(self.root, "data/2026-11-13/issue.json"), root=self.root)
+        self.assertEqual(again, url)
+        self.assertEqual(self._read("docs/issues/2026-11-13.html"), page)
+        self.assertIn(url, self._read("work/notice.txt"))
+
     def test_index_includes_earlier_issues(self):
         os.makedirs(os.path.join(self.root, "data/2026-11-06"))
         self._write("data/2026-11-06/issue.json", {"week_end": "2026-11-06", "headline": "前の週"})

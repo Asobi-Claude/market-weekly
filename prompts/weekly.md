@@ -16,7 +16,16 @@
 python3 scripts/state.py status
 ```
 
-`already_done` が `true` なら、**ここで終了**します。`week_end`（その週の金曜日）を控えます。
+`week_end`（市場が閉まった直近の金曜日）を控えます。
+
+- `already_done` が `true` なら、**ここで終了**します。
+- `published` が `true`（ページは公開済みで、LINE がまだ）なら、**解説を書き直してはいけません**。公開済みのデータからページと通知文を作り直し、手順 10 に進みます。
+
+  ```
+  python3 scripts/render.py --snapshot data/<week_end>/snapshot.json --issue data/<week_end>/issue.json
+  ```
+
+- どちらも `false` なら、手順 2 に進みます。
 
 ## 2. 値動きを計算する
 
@@ -57,6 +66,7 @@ python3 scripts/weekly.py snapshot
 
 - 複数の商品を動かした**共通の出来事**があれば、それを「今週のテーマ」にします（最大 2 つ）。
 - テーマは「出来事（event）→ 仕組み（mechanism）→ 商品（instrument）」の矢印の図にします。商品から商品への矢印（例: 円高 → 日本株）も使えます。
+- **商品に入る矢印には、必ず出典を付けます。** 「金はこの理由で上がった」と言える報道がない商品は、テーマに入れず `others` で `unclear: true` にします。仕組みどうしの矢印（例: 原油安 → 金利低下）は、教科書的な説明なら出典なしでかまいません。
 - **無理にこじつけません。** テーマに入らない商品は `others` に入れます。共通点が見当たらない週は `themes` を空にして、全部を `others` にします。
 
 ## 6. `work/issue.json` を書く
@@ -98,7 +108,13 @@ python3 scripts/render.py
 
 ## 9. 公開する
 
-`docs/` と `data/` を `issue: <week_end> <headline>` というメッセージでコミットし、**`master` ブランチに直接** push します。`work/` はコミットしません。
+まず、公開したことを記録します（ページと記録を同じコミットに入れるためです）。
+
+```
+python3 scripts/state.py record --week-end <week_end> --status published --headline "<headline>" --url "<URL>"
+```
+
+`docs/`、`data/`、`issues.json` を `issue: <week_end>` というメッセージで**1 つのコミットにまとめて**、**`master` ブランチに直接** push します。`work/` はコミットしません。
 
 push が失敗したら `git pull --rebase origin master` をしてからもう一度 push します（2 回まで）。それでも push できなければ、LINE は送らず、その旨を報告して終了します。
 
@@ -126,14 +142,10 @@ python3 scripts/send_line.py --key <week_end> work/notice.txt
 python3 scripts/state.py record --week-end <week_end> --status sent --headline "<headline>" --url "<URL>"
 ```
 
-失敗:
+失敗したときは、**記録を `published` のまま変えません**（ページは公開済みなので、次に手動で実行したときに LINE だけを送り直せます）。`issues.json` は変更せず、コミットもしません。
 
-```
-python3 scripts/state.py record --week-end <week_end> --status failed --error "<エラー出力の1行目>"
-```
-
-`issues.json` を `record: <week_end>` でコミットし、`master` に push します（失敗時は手順 9 と同じ再試行）。
+成功したときは、`issues.json` を `record: <week_end>` でコミットし、`master` に push します（失敗時は手順 9 と同じ再試行）。この push が最後まで失敗しても、LINE は送り直しません。
 
 ## 13. 終わり方
 
-送った号の見出しと URL、または失敗・休刊の理由を 1 行で報告して終了します。
+送った号の見出しと URL、または失敗・休刊の理由を 1 行で報告して終了します。LINE の送信に失敗した場合は、「ページは公開済み。ルーティンを手動でもう一度実行すると LINE だけ送り直します」と書き添えます。
