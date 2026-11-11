@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>レポートの見た目 2案</title>
+<style>
+  :root { --ink:#1c2230; --sub:#667085; --line:#e4e7ec; --bg:#f3f1ec; --paper:#fffdf9; --up:#c8372d; --down:#2563a8; --accent:#8a6d1f; --soft:#f6f1e3; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:"Yu Gothic UI","Hiragino Sans","Meiryo",sans-serif; line-height:1.7; }
+  .top { max-width:960px; margin:0 auto; padding:28px 16px 8px; }
+  .top h1 { font-size:22px; margin:0 0 6px; }
+  .top p { margin:0; color:var(--sub); font-size:14px; }
+  .note { display:inline-block; margin-top:10px; padding:4px 10px; background:#fff3cd; border-radius:6px; font-size:13px; color:#6b5200; }
+  .wrap { max-width:960px; margin:0 auto; padding:16px; display:flex; gap:28px; flex-wrap:wrap; justify-content:center; }
+  .col { width:390px; max-width:100%; }
+  .col > h2 { font-size:17px; margin:8px 0 2px; }
+  .col > p { font-size:13px; color:var(--sub); margin:0 0 10px; }
+  .phone { background:var(--paper); border:8px solid #22262e; border-radius:34px; padding:18px 16px 24px; height:760px; overflow-y:auto; box-shadow:0 10px 30px rgba(0,0,0,.12); }
+  .mast { border-bottom:2px solid var(--ink); padding-bottom:8px; margin-bottom:14px; }
+  .mast .t { font-family:"Yu Mincho","Hiragino Mincho ProN",serif; font-size:21px; font-weight:700; }
+  .mast .d { font-size:12px; color:var(--sub); }
+  h3 { font-size:15px; margin:18px 0 8px; }
+  .lbl { font-size:11px; letter-spacing:.08em; color:var(--accent); font-weight:700; }
+  .bars { font-size:13px; }
+  .bar { display:grid; grid-template-columns:92px 1fr 54px; align-items:center; gap:6px; margin:5px 0; }
+  .track { position:relative; height:14px; }
+  .track::before { content:""; position:absolute; left:50%; top:-2px; bottom:-2px; border-left:1px solid #b9bfca; }
+  .fill { position:absolute; top:0; height:14px; border-radius:2px; }
+  .fill.u { left:50%; background:var(--up); }
+  .fill.d { right:50%; background:var(--down); }
+  .pct { text-align:right; font-variant-numeric:tabular-nums; font-weight:700; }
+  .u { color:var(--up); } .d { color:var(--down); }
+  .card { border:1px solid var(--line); border-radius:12px; padding:14px; margin-top:12px; background:#fff; }
+  .card .head { display:flex; justify-content:space-between; align-items:baseline; }
+  .card .name { font-size:17px; font-weight:700; }
+  .card .chg { font-size:17px; font-weight:700; font-variant-numeric:tabular-nums; }
+  .card p { font-size:14px; margin:6px 0; }
+  .chain { display:flex; flex-direction:column; gap:0; margin:8px 0; }
+  .step { background:var(--soft); border-radius:8px; padding:8px 10px; font-size:13.5px; }
+  .arrow { text-align:center; color:var(--accent); font-size:14px; line-height:1.3; }
+  .memo { border-left:3px solid var(--accent); padding:4px 10px; font-size:13px; color:#4a4436; background:#fbf8ef; margin-top:8px; }
+  .quiz { margin-top:10px; padding:10px; border:1px dashed #b9bfca; border-radius:8px; font-size:13px; }
+  .stub { display:flex; justify-content:space-between; padding:12px 14px; border:1px solid var(--line); border-radius:12px; margin-top:8px; background:#fff; font-size:14px; font-weight:700; }
+  .theme { background:var(--ink); color:#fff; border-radius:12px; padding:14px; }
+  .theme .lbl { color:#e8c96a; }
+  .theme .big { font-family:"Yu Mincho","Hiragino Mincho ProN",serif; font-size:19px; font-weight:700; margin-top:2px; }
+  .theme p { font-size:13.5px; margin:6px 0 0; color:#dfe3ea; }
+  svg text { font-family:inherit; }
+</style>
+</head>
+<body>
+<div class="top">
+  <h1>レポートの見た目 2案</h1>
+  <p>スマホで開いたときの画面を想定しています。それぞれ枠の中を下にスクロールできます。</p>
+  <span class="note">数字・出来事はすべて架空のサンプルです（実際の相場ではありません）</span>
+</div>
+
+<div class="wrap">
+
+  <!-- A -->
+  <div class="col">
+    <h2>A案：銘柄ごとに深掘り</h2>
+    <p>動いたものを順に1つずつ、「何が起きた → なぜ動いた」で解説</p>
+    <div class="phone">
+      <div class="mast"><div class="t">週刊 世界マーケット解説</div><div class="d">◯月◯日〜◯月◯日の週（サンプル）</div></div>
+
+      <div class="lbl">今週の動き</div>
+      <div class="bars">
+        <div class="bar"><span>金</span><div class="track"><div class="fill u" style="width:32%"></div></div><span class="pct u">▲3.2%</span></div>
+        <div class="bar"><span>米国株 S&amp;P500</span><div class="track"><div class="fill u" style="width:18%"></div></div><span class="pct u">▲1.8%</span></div>
+        <div class="bar"><span>欧州株 STOXX600</span><div class="track"><div class="fill u" style="width:9%"></div></div><span class="pct u">▲0.9%</span></div>
+        <div class="bar"><span>ドル/円</span><div class="track"><div class="fill d" style="width:15%"></div></div><span class="pct d">▼1.5%</span></div>
+        <div class="bar"><span>日経平均</span><div class="track"><div class="fill d" style="width:21%"></div></div><span class="pct d">▼2.1%</span></div>
+        <div class="bar"><span>原油 WTI</span><div class="track"><div class="fill d" style="width:44%"></div></div><span class="pct d">▼4.4%</span></div>
+      </div>
+
+      <div class="card">
+        <div class="head"><span class="name">① 金</span><span class="chg u">▲3.2%</span></div>
+        <svg viewBox="0 0 320 90" width="100%" aria-label="金の1週間の値動き">
+          <line x1="0" y1="70" x2="320" y2="70" stroke="#e4e7ec"/>
+          <polyline fill="none" stroke="#c8372d" stroke-width="2.5" points="10,68 85,62 160,58 235,30 310,18"/>
+          <circle cx="235" cy="30" r="4" fill="#c8372d"/>
+          <text x="150" y="20" font-size="11" fill="#667085">水曜：米雇用統計が予想を下回る</text>
+          <line x1="235" y1="24" x2="235" y2="26" stroke="#667085"/>
+          <g font-size="10" fill="#98a2b3"><text x="4" y="86">月</text><text x="80" y="86">火</text><text x="155" y="86">水</text><text x="230" y="86">木</text><text x="302" y="86">金</text></g>
+        </svg>
+        <div class="lbl">何が起きた</div>
+        <p>水曜発表の米国の雇用統計が予想より弱く、「米国の中央銀行（FRB）が近く利下げする」という見方が強まりました。</p>
+        <div class="lbl">なぜ金が上がるのか</div>
+        <div class="chain">
+          <div class="step">景気が弱い → FRBは金利を下げて景気を支えようとする</div><div class="arrow">▼</div>
+          <div class="step">金利が下がると、預金や国債でもらえる利息が減る</div><div class="arrow">▼</div>
+          <div class="step">金はもともと利息がつかない。利息の差が縮まり「金でもいいか」となる</div><div class="arrow">▼</div>
+          <div class="step"><b>金が買われて値上がり</b></div>
+        </div>
+        <div class="memo"><b>用語メモ｜利下げ観測</b><br>まだ利下げは決まっていないが、市場が「そうなりそうだ」と予想している状態。相場は決定より先に、予想で動きます。</div>
+        <div class="quiz"><b>説明してみよう</b><br>「金利が下がると金が上がりやすい」のはなぜ？ 30秒で声に出してみてください。</div>
+      </div>
+
+      <div class="stub"><span>② 原油 WTI</span><span class="d">▼4.4%　›</span></div>
+      <div class="stub"><span>③ 日経平均</span><span class="d">▼2.1%　›</span></div>
+      <div class="stub"><span>④ 米国株 S&amp;P500</span><span class="u">▲1.8%　›</span></div>
+      <div class="stub"><span>⑤ ドル/円</span><span class="d">▼1.5%　›</span></div>
+    </div>
+  </div>
+
+  <!-- B -->
+  <div class="col">
+    <h2>B案：今週のテーマでつなげる</h2>
+    <p>1つの出来事が複数の商品をどう動かしたかを、1枚の図でつなげて解説</p>
+    <div class="phone">
+      <div class="mast"><div class="t">週刊 世界マーケット解説</div><div class="d">◯月◯日〜◯月◯日の週（サンプル）</div></div>
+
+      <div class="theme">
+        <div class="lbl">今週のテーマ</div>
+        <div class="big">「米国の利下げ観測」が世界を動かした</div>
+        <p>弱い雇用統計をきっかけに、金・株・為替が同時に動きました。別々のニュースに見えて、根っこは1つです。</p>
+      </div>
+
+      <h3>つながりの図</h3>
+      <svg viewBox="0 0 330 330" width="100%" aria-label="利下げ観測から各商品への因果の図">
+        <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8a6d1f"/></marker></defs>
+        <rect x="85" y="6" width="160" height="34" rx="8" fill="#f6f1e3" stroke="#8a6d1f"/><text x="165" y="28" text-anchor="middle" font-size="12.5">米雇用統計が弱い</text>
+        <line x1="165" y1="40" x2="165" y2="62" stroke="#8a6d1f" stroke-width="1.5" marker-end="url(#a)"/>
+        <rect x="70" y="64" width="190" height="38" rx="8" fill="#1c2230"/><text x="165" y="88" text-anchor="middle" font-size="13.5" fill="#fff" font-weight="700">利下げ観測 → 米金利低下</text>
+        <g stroke="#8a6d1f" stroke-width="1.5" fill="none" marker-end="url(#a)">
+          <path d="M100,102 L58,150"/><path d="M165,102 L165,150"/><path d="M230,102 L272,150"/><path d="M272,206 L272,248"/>
+        </g>
+        <g font-size="12" text-anchor="middle">
+          <rect x="8" y="152" width="100" height="54" rx="8" fill="#fff" stroke="#c8372d"/><text x="58" y="174" font-weight="700">金</text><text x="58" y="194" fill="#c8372d" font-weight="700">▲3.2%</text>
+          <rect x="115" y="152" width="100" height="54" rx="8" fill="#fff" stroke="#c8372d"/><text x="165" y="174" font-weight="700">米国株</text><text x="165" y="194" fill="#c8372d" font-weight="700">▲1.8%</text>
+          <rect x="222" y="152" width="100" height="54" rx="8" fill="#fff" stroke="#2563a8"/><text x="272" y="174" font-weight="700">ドル安・円高</text><text x="272" y="194" fill="#2563a8" font-weight="700">▼1.5%</text>
+          <rect x="222" y="250" width="100" height="54" rx="8" fill="#fff" stroke="#2563a8"/><text x="272" y="272" font-weight="700">日経平均</text><text x="272" y="292" fill="#2563a8" font-weight="700">▼2.1%</text>
+        </g>
+        <g font-size="10.5" fill="#667085">
+          <text x="8" y="224">利息のつかない金が</text><text x="8" y="238">相対的に魅力的に</text>
+          <text x="115" y="224">お金を借りやすく</text><text x="115" y="238">なり企業に追い風</text>
+          <text x="150" y="268">円高は輸出企業</text><text x="150" y="282">の利益を減らす</text>
+        </g>
+      </svg>
+
+      <div class="card">
+        <div class="head"><span class="name">矢印を1本ずつ解説</span></div>
+        <div class="lbl" style="margin-top:8px">金利低下 → ドル安・円高</div>
+        <p>米国の金利が下がると、ドルで持っていても得られる利息が減ります。するとドルを売って他の通貨に替える人が増え、ドルが安く（円が高く）なります。</p>
+        <div class="lbl">円高 → 日経平均の下落</div>
+        <p>日本の大企業は輸出で稼ぐ会社が多く、海外で稼いだドルを円に替えると目減りします。利益が減りそうだ、という見方から株が売られました。</p>
+        <div class="memo"><b>用語メモ｜利下げ観測</b><br>まだ決まっていないが、市場が「そうなりそうだ」と予想している状態。</div>
+      </div>
+
+      <h3>テーマ以外の大きな動き</h3>
+      <div class="stub"><span>原油 WTI<br><span style="font-weight:400;font-size:12.5px;color:#667085">産油国の増産合意で供給が増える見通し</span></span><span class="d">▼4.4%　›</span></div>
+
+      <div class="quiz"><b>説明してみよう</b><br>「米国の雇用が弱いと、なぜ日本株が下がることがあるのか」を図を見ずに3ステップで。</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
