@@ -41,6 +41,22 @@ class FormatTest(unittest.TestCase):
         self.assertEqual(wrap("", 5), [""])
 
 
+class LabelWrapTest(unittest.TestCase):
+    def test_label_breaks_at_a_space_when_both_parts_fit(self):
+        from scripts.charts import wrap_label
+        self.assertEqual(wrap_label("インド株 Nifty50", 7), ["インド株", "Nifty50"])
+        self.assertEqual(wrap_label("香港株 ハンセン", 7), ["香港株", "ハンセン"])
+
+    def test_label_without_spaces_is_balanced_not_orphaned(self):
+        from scripts.charts import wrap_label
+        self.assertEqual(wrap_label("米中間選挙で民主党が上下両院を制す", 15), ["米中間選挙で民主党", "が上下両院を制す"])
+
+    def test_short_label_stays_on_one_line(self):
+        from scripts.charts import wrap_label
+        self.assertEqual(wrap_label("日経平均", 7), ["日経平均"])
+        self.assertEqual(wrap_label("金 A", 7), ["金 A"])
+
+
 class BarsTest(unittest.TestCase):
     def test_bars_is_well_formed_and_labelled(self):
         svg = bars_svg(FEATURED)

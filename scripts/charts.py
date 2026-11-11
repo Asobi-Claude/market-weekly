@@ -52,6 +52,34 @@ def wrap(text, limit):
     return lines
 
 
+def _width(text):
+    return sum(_units(ch) for ch in text)
+
+
+def wrap_label(text, limit):
+    """Wrap a box label: prefer breaking at spaces, otherwise split into even lines (no orphans)."""
+    text = str(text)
+    if _width(text) <= limit:
+        return [text]
+    parts = text.split(" ")
+    if len(parts) > 1 and all(_width(p) <= limit for p in parts):
+        lines = [parts[0]]
+        for part in parts[1:]:
+            if _width(lines[-1] + " " + part) <= limit:
+                lines[-1] += " " + part
+            else:
+                lines.append(part)
+        return lines
+    count = -(-_width(text) // limit)
+    target = _width(text) / count
+    while target < limit:
+        lines = wrap(text, target)
+        if len(lines) <= count:
+            return lines
+        target += 0.25
+    return wrap(text, limit)
+
+
 def _svg(height, label, body):
     return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {height:.0f}" width="100%" '
             f'role="img" aria-label="{esc(label)}">{body}</svg>')
@@ -140,8 +168,8 @@ def _node_lines(node, width, instruments):
     limit = int((width - 12) / 12.5)
     if node.get("type") == "instrument":
         inst = instruments[node["instrument"]]
-        return wrap(inst["name"], limit), fmt_change(inst["change"], inst["unit"]), color_for(inst["change"])
-    return wrap(node.get("label", ""), limit), None, None
+        return wrap_label(inst["name"], limit), fmt_change(inst["change"], inst["unit"]), color_for(inst["change"])
+    return wrap_label(node.get("label", ""), limit), None, None
 
 
 def diagram_svg(theme, instruments):
