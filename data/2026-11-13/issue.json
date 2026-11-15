@@ -1,0 +1,272 @@
+{
+ "week_end": "2026-11-13",
+ "headline": "米物価上振れで利上げ観測、米金利5%台・ドル高で金とビットコイン安",
+ "themes": [
+  {
+   "title": "米国の物価上振れと利上げ観測 → 金利上昇・ドル高",
+   "summary": "10日に発表された米国の物価統計が予想を上回り、FRB高官も利上げに前向きな発言をしたことで、12月の利上げ観測が強まりました。米国の長期金利は5%台に上がり、ドルが幅広く買われました。その結果、ユーロと円は対ドルで下がり、利息を生まない金や、値動きの大きいビットコインは売られたと報じられています。",
+   "nodes": [
+    {
+     "id": "cpi",
+     "type": "event",
+     "label": "米10月CPIが予想上回る・FRB理事が大幅利上げに言及",
+     "sources": [
+      "s1"
+     ]
+    },
+    {
+     "id": "rates",
+     "type": "mechanism",
+     "label": "12月の利上げ観測が強まる"
+    },
+    {
+     "id": "n_us10y",
+     "type": "instrument",
+     "instrument": "us10y"
+    },
+    {
+     "id": "dollar",
+     "type": "mechanism",
+     "label": "ドルが買われる（ドル高）"
+    },
+    {
+     "id": "n_gold",
+     "type": "instrument",
+     "instrument": "gold"
+    },
+    {
+     "id": "n_eurusd",
+     "type": "instrument",
+     "instrument": "eurusd"
+    },
+    {
+     "id": "n_usdjpy",
+     "type": "instrument",
+     "instrument": "usdjpy"
+    },
+    {
+     "id": "n_btc",
+     "type": "instrument",
+     "instrument": "btc"
+    }
+   ],
+   "edges": [
+    {
+     "from": "cpi",
+     "to": "rates",
+     "short": "物価が強く、利上げで抑える見方",
+     "explain": "10日に発表された10月の米消費者物価指数（CPI、身の回りのモノやサービスの値段の動きを表す指標）は前月比0.4%上昇で、市場予想の0.3%を上回りました。同じ日、FRB（米国の中央銀行にあたる連邦準備制度理事会）のウォラー理事は、12月の会合で0.5ポイントの利上げも検討すべきだと述べたと報じられています。中央銀行は物価が上がりすぎると、政策金利を上げてお金を借りにくくし、景気の過熱を冷まそうとします。物価が予想より強く、当局者からも積極的な発言が出たことで、市場では12月の利上げが既定路線と受け止められました。",
+     "sources": [
+      "s1"
+     ]
+    },
+    {
+     "from": "rates",
+     "to": "n_us10y",
+     "short": "利上げ見通しで国債が売られる",
+     "explain": "10年国債の利回りは、「この先しばらく政策金利がどうなりそうか」という見通しを反映して動きます。利上げが近いと考えられると、これから出てくる国債はより高い利回りになるはずなので、今ある低い利回りの国債は魅力が薄れて売られます。国債は売られて価格が下がると、利回りが上がるという関係にあります。CNBCは10日、CPIとウォラー理事の発言を受けて10年債利回りが5%に迫ったと伝え、10年債の入札が振るわなかったことも売りを強めたとしています。13日の生産者物価指数（PPI、企業どうしで取引されるモノの値段）の発表後も、利回りは5%を上回って推移したと報じられています。",
+     "sources": [
+      "s1",
+      "s2"
+     ]
+    },
+    {
+     "from": "rates",
+     "to": "dollar",
+     "short": "高い利息を求めてドルへ",
+     "explain": "お金は、より高い利息がもらえる場所へ動きやすい性質があります。たとえば説明のための仮の数字で、米国の金利が5%、別の国が2%なら、100万円分を米国で運用すれば年5万円、別の国では年2万円です。米国の金利が上がりそうだとなると、ドル建ての資産を持ちたい人が増え、ドルを買う動きが強まります。CNBCは13日、今週前半の予想を上回る物価統計が追加の引き締め観測を高め、米国債利回りとドルを押し上げたと伝えました。主要通貨に対するドルの強さを示すドル指数は、2025年4月以来の高い水準を付けたとしています。",
+     "sources": [
+      "s4"
+     ]
+    },
+    {
+     "from": "dollar",
+     "to": "n_eurusd",
+     "short": "ドル買いでユーロが1年半ぶり安値",
+     "explain": "ユーロ/ドルは「1ユーロで何ドル買えるか」を表します。ドルが買われるとユーロの値打ちは相対的に下がり、この数字は小さくなります。日本経済新聞は11日のロンドン外国為替市場について、米国で利上げが進むとの観測が強まってドル買いが広がり、ユーロが対ドルで一時1年半ぶりの安値を付けたと伝えました。前日の米CPIが予想を上回ったことや、FRB高官から利上げに前向きな発言が相次いだことが背景として挙げられています。逆に、米国の利上げ観測が弱まれば、ドルを持つ魅力が薄れ、ユーロ/ドルは上がりやすくなります。",
+     "sources": [
+      "s3"
+     ]
+    },
+    {
+     "from": "dollar",
+     "to": "n_usdjpy",
+     "short": "日米の金利差拡大の見方で円安",
+     "explain": "ドル/円は「1ドルが何円か」を表し、数字が大きいほど円安・ドル高です。日本経済新聞は11日のロンドン市場について、米国の利上げ観測が強まるなかで円が対ドルで159円台後半まで下げたと伝え、日米の金利差が広がるとの見方を背景に挙げました。日本の金利が低いまま米国の金利が上がると、円で持つよりドルで持つほうが受け取れる利息の差が大きくなり、円を売ってドルを買う動きが出やすくなります。記事は、原油高で日本の貿易赤字が膨らむとの見方も円の重荷として挙げています。輸入代金を払うために円を売ってドルを買う量が増える、という仕組みです。",
+     "sources": [
+      "s3"
+     ]
+    },
+    {
+     "from": "rates",
+     "to": "n_gold",
+     "short": "利息を生まない金が不利に",
+     "explain": "金（ゴールド）は、持っていても利息や配当を生みません。金利が低いときは預金や国債の利息も少ないので、この不利はあまり目立ちません。ところが金利が上がると話が変わります。説明のための仮の数字で、国債の利回りが5%なら100万円で年5万円の利息が入りますが、金を持つとその5万円をあきらめることになります。日本経済新聞は13日、米物価指標の上振れなどでFRBの利上げ継続観測が強まり、利息を生まない金を売る動きが広がって、金が1年ぶりの安値になったと伝えました。ブルームバーグも10日、ウォラー理事が大幅利上げの可能性を示唆し、金相場が下げ幅を広げたと見出しで報じています。",
+     "sources": [
+      "s5",
+      "s6"
+     ]
+    },
+    {
+     "from": "dollar",
+     "to": "n_btc",
+     "short": "ドル高でリスク資産から資金が退く",
+     "explain": "ビットコインは利息を生まず、値動きがとても大きい資産です。金利が上がり、ドルの預金や国債で確実な利息が得られるようになると、値動きの大きい資産からお金を引き揚げる動き（リスクオフ）が起きやすくなります。CNBCは13日、ビットコインが8月以来初めて7万ドルを下回ったと伝え、ドル高に結びついたリスクオフの動きだと説明しました。同じ記事は、機関投資家の売りや、借金をして大きく賭けていた取引が強制的に決済された額が今週10億ドルを超えたことも挙げています。ブルームバーグも10日、米国のインフレ上昇でビットコインが2月以来の安値に下げたと見出しで伝えました。",
+     "sources": [
+      "s4",
+      "s7"
+     ]
+    }
+   ],
+   "glossary": [
+    {
+     "term": "利上げ観測",
+     "text": "中央銀行が近いうちに政策金利を引き上げるだろう、という市場の見方。実際に上げる前から、国債や通貨の値段に織り込まれていきます。"
+    },
+    {
+     "term": "ドル指数",
+     "text": "ユーロや円など主要な通貨に対して、ドルがどれだけ強いかを1つの数字にまとめた指標。上がるほどドル高です。"
+    },
+    {
+     "term": "リスクオフ",
+     "text": "値動きの大きい資産（株や暗号資産など）を売り、より安全とされる資産へお金を移す動き。逆はリスクオンと呼びます。"
+    }
+   ],
+   "focus": [
+    {
+     "instrument": "us10y",
+     "notes": [
+      {
+       "date": "2026-11-10",
+       "text": "10月の米CPIが予想上回る・ウォラー理事発言"
+      },
+      {
+       "date": "2026-11-13",
+       "text": "生産者物価指数の発表"
+      }
+     ]
+    },
+    {
+     "instrument": "eurusd",
+     "notes": [
+      {
+       "date": "2026-11-11",
+       "text": "一時1年半ぶりのユーロ安・ドル高"
+      }
+     ]
+    },
+    {
+     "instrument": "gold",
+     "notes": [
+      {
+       "date": "2026-11-12",
+       "text": "1年ぶりの安値に"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "others": [
+  {
+   "instrument": "stoxx600",
+   "what": "欧州の主要600社でつくるSTOXX600は週を通じて上がり、最高値を更新しました。ブルームバーグによると、13日には4日続いた最高値圏への上昇がいったん止まりました。",
+   "why_steps": [
+    "ブルームバーグは11日、資源株とハイテク株の上昇で欧州株が最高値に向かうと見出しで伝えた",
+    "同社は、原油安とAI関連株への期待の高まりが市場心理を支えたとしている",
+    "原油が安くなると企業の燃料費や原材料費が下がり、利益が増えるとの期待につながりやすい",
+    "15日の記事は10月以降の上昇について、好調な決算や中東・ウクライナの緊張緩和期待を挙げた",
+    "詳しく伝える報道は限られています"
+   ],
+   "unclear": false,
+   "sources": [
+    "s8",
+    "s9",
+    "s10"
+   ]
+  },
+  {
+   "instrument": "nikkei",
+   "what": "日経平均は週間で大きく上がりました。10日には一時6万円を回復しました。",
+   "why_steps": [
+    "10日は、前日の米国市場でAI関連株が持ち直し、日本株にも買い戻しが入ったと報じられた",
+    "米国がイラン攻撃を再開する可能性は低いとみられ、原油先物が約2カ月ぶりの安値近辺に下げた",
+    "原油安は企業のコスト低下につながり、投資家心理を支えたと伝えられている",
+    "週全体の上昇を詳しく伝える報道は限られています"
+   ],
+   "unclear": false,
+   "sources": [
+    "s11"
+   ]
+  }
+ ],
+ "quiz": "米国の物価統計が予想を上回ったことが、なぜ「金の値下がり」と「円安」の両方につながったのでしょうか。「金利」と「利息」をキーワードに、自分の言葉で説明してみよう。",
+ "sources": [
+  {
+   "id": "s1",
+   "publisher": "CNBC",
+   "title": "10-year Treasury yield races back to 5% as inflation data, Waller comments drive rate hike expectations",
+   "url": "https://www.cnbc.com/2026/11/10/us-bonds-treasurys-yields.html"
+  },
+  {
+   "id": "s2",
+   "publisher": "CNBC",
+   "title": "10-year Treasury yield moves to 5.17% as traders weigh producer price report",
+   "url": "https://www.cnbc.com/amp/2026/11/13/treasury-yields-fed-rates.html"
+  },
+  {
+   "id": "s3",
+   "publisher": "日本経済新聞",
+   "title": "ロンドン外為11日 円、対ドルで159円台後半 米利上げ観測でドル買い ユーロは対ドルで一時1年半ぶり安値",
+   "url": "https://www.nikkei.com/article/DGXZQOFL11CK40R11C26A1000000/"
+  },
+  {
+   "id": "s4",
+   "publisher": "CNBC",
+   "title": "Nasdaq falls on Friday as Nvidia sells off, but index notches best week since August: Live updates",
+   "url": "https://www.cnbc.com/2026/11/12/stock-market-today-live-updates.html"
+  },
+  {
+   "id": "s5",
+   "publisher": "日本経済新聞",
+   "title": "金3800ドル台に下落、1年ぶり安値 米利上げ継続の観測拡大で",
+   "url": "https://www.nikkei.com/article/DGXZQOUB130OI0T11C26A1000000/"
+  },
+  {
+   "id": "s6",
+   "publisher": "ブルームバーグ",
+   "title": "金相場が下げ幅拡大－FRBウォラー理事が大幅利上げの可能性示唆",
+   "url": "https://www.bloomberg.com/jp/news/articles/2026-11-10/TOA6K9KK3NY800?srnd=jp-homepage"
+  },
+  {
+   "id": "s7",
+   "publisher": "ブルームバーグ",
+   "title": "US Inflation Rise Sends Bitcoin to Lowest Level Since February",
+   "url": "https://www.bloomberg.com/news/articles/2026-11-10/bitcoin-drops-to-almost-three-month-low-as-us-inflation-dims-risk-appetite"
+  },
+  {
+   "id": "s8",
+   "publisher": "ブルームバーグ",
+   "title": "European Stocks Set for Record as Miners and Tech Rally",
+   "url": "https://www.bloomberg.com/news/articles/2026-11-11/european-stocks-set-for-record-as-miners-and-tech-rally"
+  },
+  {
+   "id": "s9",
+   "publisher": "ブルームバーグ",
+   "title": "European Shares Pull Back From Record High After Four-Day Rally",
+   "url": "https://www.bloomberg.com/news/articles/2026-11-13/european-shares-pull-back-from-record-high-after-four-day-rally"
+  },
+  {
+   "id": "s10",
+   "publisher": "ブルームバーグ",
+   "title": "State Street, Pictet Call Time on Europe's Stock Market Rally",
+   "url": "https://www.bloomberg.com/news/articles/2026-11-15/state-street-pictet-call-time-on-europe-s-stock-market-rally"
+  },
+  {
+   "id": "s11",
+   "publisher": "日本経済新聞",
+   "title": "日経平均株価、一時6万円を回復 米AI株上昇や原油安で",
+   "url": "https://www.nikkei.com/article/DGXZQOUB100KD0Q6A111C2000000/"
+  }
+ ]
+}
